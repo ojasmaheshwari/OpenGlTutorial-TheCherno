@@ -9,6 +9,9 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 
+#include "VertexArray.h"
+#include "VertexBufferLayout.h"
+
 
 static unsigned int CompileShader(unsigned int type, const std::string& source)
 {
@@ -119,10 +122,12 @@ int main(void)
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
+    VertexArray va;
     VertexBuffer vb(positions, 8 * sizeof(float));
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, false, 2 * sizeof(float), 0);
-    glEnableVertexAttribArray(0);
+    VertexBufferLayout layout;
+    layout.Push<float>(2);
+    va.AddBuffer(vb, layout);
 
     IndexBuffer ib(indices, 6);
     
@@ -146,7 +151,7 @@ int main(void)
 
         glUseProgram(program);
 
-        glBindVertexArray(vao);
+        va.Bind();
 
         ib.Bind();
 
