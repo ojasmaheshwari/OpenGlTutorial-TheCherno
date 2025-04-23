@@ -12,6 +12,8 @@
 #include "VertexArray.h"
 #include "VertexBufferLayout.h"
 
+#include "Shader.h"
+
 
 static unsigned int CompileShader(unsigned int type, const std::string& source)
 {
@@ -118,10 +120,6 @@ int main(void)
         0, 1, 2, 2, 3, 0
     };
 
-    unsigned int vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
     VertexArray va;
     VertexBuffer vb(positions, 8 * sizeof(float));
 
@@ -130,13 +128,9 @@ int main(void)
     va.AddBuffer(vb, layout);
 
     IndexBuffer ib(indices, 6);
-    
 
-    std::string vertexShaderSource = loadShaderSourceFromPath("shaders/vertex.glsl");
-    std::string fragmentShaderSource = loadShaderSourceFromPath("shaders/fragment.glsl");
-    unsigned int program = CreateShader(vertexShaderSource, fragmentShaderSource);
-
-    glUseProgram(program);
+    VertexShader vs("shaders/vertex.glsl");
+    FragmentShader fs("shaders/fragment.glsl");
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -149,7 +143,7 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(program);
+        vs.Bind();
 
         va.Bind();
 

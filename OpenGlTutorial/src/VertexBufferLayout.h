@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <GL/glew.h>
-#include <assert.h>
+#include <cassert>
 
 struct VertexBufferElement {
 	unsigned int type;
@@ -27,7 +27,7 @@ private:
 	unsigned int m_Stride;
 public:
 	VertexBufferLayout() : m_Stride(0) {};
-	~VertexBufferLayout() {};
+	~VertexBufferLayout() = default;
 
 	template<typename T>
 	void Push(unsigned int count) {
