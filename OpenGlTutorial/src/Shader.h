@@ -1,32 +1,33 @@
 #pragma once
 
 #include <iostream>
+#include <unordered_map>
 
-static unsigned int RendererID = -1;
+struct ShaderProgramSource {
+	std::string VertexSource;
+	std::string FragmentSource;
+};
 
 class Shader {
+private:
+	std::string m_FilePath;
+	unsigned int m_RendererID;
+	// Caching for uniforms
+	std::unordered_map<std::string, int> m_UniformLocationCache;
+
 public:
+	Shader(const std::string &filePath);
 	~Shader();
 
 	void Bind() const;
-	void Unbind();
+	void Unbind() const;
+	
+	// Set uniforms
+	void SetUniform4f(const std::string &name, float f0, float f1, float f2, float f3);
 
-	std::string LoadSource(const std::string &filePath);
+private:
+	ShaderProgramSource ParseShader(const std::string& filePath);
 	unsigned int CompileShader(unsigned int type, const std::string& source);
-};
-
-class VertexShader : Shader {
-public:
-	VertexShader(const std::string& filePath);
-	~VertexShader() = default;
-
-	void Bind() const;
-};
-
-class FragmentShader : Shader {
-public:
-	FragmentShader(const std::string& filePath);
-	~FragmentShader() = default;
-
-	void Bind();
+	int GetUniformLocation(const std::string& name);
+	unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
 };
