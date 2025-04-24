@@ -71,6 +71,8 @@ int main(void)
     Shader shader("shaders/basic.glsl");
     shader.Bind();
 
+    Renderer renderer;
+
     va.Unbind();
     vb.Unbind();
     ib.Unbind();
@@ -80,17 +82,12 @@ int main(void)
      while (!glfwWindowShouldClose(window))
     {
         /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+        renderer.Clear();
 
-        shader.Bind();
-
-        va.Bind();
-
-        ib.Bind();
-
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+        renderer.Draw(va, ib, shader);
 
         /* Swap front and back buffers */
+
         glfwSwapBuffers(window);
 
         /* Poll for and process events */
