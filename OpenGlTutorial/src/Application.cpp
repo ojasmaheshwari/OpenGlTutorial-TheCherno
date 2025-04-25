@@ -15,6 +15,8 @@
 
 #include "Shader.h"
 
+#include "Texture.h"
+
 int main(void)
 {
     GLFWwindow* window;
@@ -50,26 +52,31 @@ int main(void)
     std::cout << glGetString(GL_VERSION) << '\n';
 
     float positions[] = {
-        -0.5f, -0.5f,
-        0.5f, -0.5f,
-        0.5f, 0.5f,
-        -0.5f, 0.5f,
+        -0.5f, -0.5f, 0.0f, 0.0f,
+        0.5f, -0.5f, 1.0f, 0.0f,
+        0.5f, 0.5f, 1.0f, 1.0f,
+        -0.5f, 0.5f, 0.0f, 1.0f,
     };
     unsigned int indices[] = {
         0, 1, 2, 2, 3, 0
     };
 
     VertexArray va;
-    VertexBuffer vb(positions, 8 * sizeof(float));
+    VertexBuffer vb(positions, 4 * 4 * sizeof(float));
 
     VertexBufferLayout layout;
+    layout.Push<float>(2);
     layout.Push<float>(2);
     va.AddBuffer(vb, layout);
 
     IndexBuffer ib(indices, 6);
 
-    Shader shader("shaders/basic.glsl");
+    Shader shader("res/shaders/basic.glsl");
     shader.Bind();
+
+    Texture texture("res/textures/flower.jpg");
+    texture.Bind();
+    shader.SetUniform1i("u_Texture", 0);
 
     Renderer renderer;
 

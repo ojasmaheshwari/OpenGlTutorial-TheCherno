@@ -10,10 +10,46 @@ MessageCallback(GLenum source,
     const GLchar* message,
     const void* userParam)
 {
-    /*fprintf(stderr, "GL CALLBACK: %s type = 0x%x, source = %x%x, severity = 0x%x, message = %s\n",
-        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-        source, type, severity, message);*/
-    std::cout << "GL_ERROR: " << message << '\n';
+	std::cout << "---------------------opengl-callback-start------------\n";
+	std::cout << "message: " << message << '\n';
+	std::cout << "type: ";
+	switch (type) {
+	case GL_DEBUG_TYPE_ERROR:
+		std::cout << "ERROR";
+		break;
+	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+		std::cout << "DEPRECATED_BEHAVIOR";
+		break;
+	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+		std::cout << "UNDEFINED_BEHAVIOR";
+		break;
+	case GL_DEBUG_TYPE_PORTABILITY:
+		std::cout << "PORTABILITY";
+		break;
+	case GL_DEBUG_TYPE_PERFORMANCE:
+		std::cout << "PERFORMANCE";
+		break;
+	case GL_DEBUG_TYPE_OTHER:
+		std::cout << "OTHER";
+		break;
+	}
+	std::cout << '\n';
+
+	std::cout << "id: " << id << '\n';
+	std::cout << "severity: \n";
+	switch (severity) {
+	case GL_DEBUG_SEVERITY_LOW:
+		std::cout << "LOW";
+		break;
+	case GL_DEBUG_SEVERITY_MEDIUM:
+		std::cout << "MEDIUM";
+		break;
+	case GL_DEBUG_SEVERITY_HIGH:
+		std::cout << "HIGH";
+		break;
+	}
+	std::cout << '\n';
+	std::cout << "---------------------opengl-callback-end--------------" << '\n';
 }
 
 void Renderer::Clear() const {
