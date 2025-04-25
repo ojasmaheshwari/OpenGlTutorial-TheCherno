@@ -74,7 +74,7 @@ int main(void)
     Shader shader("res/shaders/basic.glsl");
     shader.Bind();
 
-    Texture texture("res/textures/flower.jpg");
+    Texture texture("res/textures/gorilla.png");
     texture.Bind();
     shader.SetUniform1i("u_Texture", 0);
 
