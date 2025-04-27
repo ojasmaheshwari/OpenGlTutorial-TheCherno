@@ -17,6 +17,9 @@
 
 #include "Texture.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 int main(void)
 {
     GLFWwindow* window;
@@ -61,8 +64,8 @@ int main(void)
         0, 1, 2, 2, 3, 0
     };
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     VertexArray va;
     VertexBuffer vb(positions, 4 * 4 * sizeof(float));
@@ -74,12 +77,15 @@ int main(void)
 
     IndexBuffer ib(indices, 6);
 
+    glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+
     Shader shader("res/shaders/basic.glsl");
     shader.Bind();
 
-    Texture texture("res/textures/gorilla.png");
+    Texture texture("res/textures/doge.png");
     texture.Bind();
     shader.SetUniform1i("u_Texture", 0);
+    shader.SetUniformMat4f("u_MVP", proj);
 
     Renderer renderer;
 
