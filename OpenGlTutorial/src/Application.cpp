@@ -20,6 +20,10 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
+
 int main(void)
 {
     GLFWwindow* window;
@@ -33,7 +37,6 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
-
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(960, 540, "Hello World", NULL, NULL);
     if (!window)
@@ -44,6 +47,9 @@ int main(void)
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
+
+    // vsync
+    glfwSwapInterval(1);
 
     if (glewInit() != GLEW_OK) {
         std::cout << "Error initializing GLEW\n";
@@ -79,41 +85,70 @@ int main(void)
 
     glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
     glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f));
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200, 200, 0));
 
-    glm::mat4 mvp = proj * view * model;
 
     Shader shader("res/shaders/basic.glsl");
     shader.Bind();
 
-    Texture texture("res/textures/doge.png");
+    Texture texture("res/textures/gorilla.png");
     texture.Bind();
     shader.SetUniform1i("u_Texture", 0);
-    shader.SetUniformMat4f("u_MVP", mvp);
+
 
     Renderer renderer;
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
+
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+    #ifdef __EMSCRIPTEN__
+	    ImGui_ImplGlfw_InstallEmscriptenCallbacks(window, "#canvas");
+    #endif
+	ImGui_ImplOpenGL3_Init("#version 460");
 
     va.Unbind();
     vb.Unbind();
     ib.Unbind();
     shader.Unbind();
 
+    auto translation = glm::vec3(200, 200, 0);
+
     /* Loop until the user closes the window */
      while (!glfwWindowShouldClose(window))
     {
-        /* Render here */
-        renderer.Clear();
+		/* Poll for and process events */
+		glfwPollEvents();
 
-        renderer.Draw(va, ib, shader);
+		/* Render here */
+		renderer.Clear();
 
-        /* Swap front and back buffers */
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 
-        glfwSwapBuffers(window);
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+		glm::mat4 mvp = proj * view * model;
 
-        /* Poll for and process events */
-        glfwPollEvents();
+        shader.Bind();
+        shader.SetUniformMat4f("u_MVP", mvp);
+
+		renderer.Draw(va, ib, shader);
+
+		ImGui::SliderFloat3("translation", &translation.x, 0.0f, 960.0f);
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		/* Swap front and back buffers */
+		glfwSwapBuffers(window);
     }
 
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
     glfwTerminate();
     return 0;
 }
